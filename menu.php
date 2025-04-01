@@ -110,7 +110,7 @@ if (!isset($_SESSION['erabiltzailea'])) {
             height: 32%;
         }
         #saioa-itxi {
-            top: 88%;
+            top: 75%;
             left: 0.4%;
             width: 9.8%;
             height: 8%;
