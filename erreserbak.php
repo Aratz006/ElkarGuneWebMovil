@@ -46,11 +46,27 @@ if (!isset($_SESSION['erabiltzailea'])) {
             left: 0;
             z-index: -1;
         }
+        .clickable-area {
+            position: absolute;
+            cursor: pointer;
+            background-color: rgba(255, 255, 255, 0);
+        }
+        #itzuli {
+            background-color: rgba(255, 255, 255, 0) !important;
+            transition: none !important;
+        }
+        #itzuli {
+            top: 2%;
+            left: 1%;
+            width: 15%;
+            height: 10%;
+        }
     </style>
 </head>
 <body>
     <div class="background-container">
         <img src="resources/ERRESERBAK.png" alt="Erreserbak Background" class="background-image">
+        <div id="itzuli" class="clickable-area" onclick="window.location.href='menu.php'"></div>
     </div>
 </body>
 </html>

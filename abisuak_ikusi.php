@@ -45,23 +45,27 @@ if (!isset($_SESSION['erabiltzailea'])) {
             left: 0;
             z-index: -1;
         }
-        .back-button {
+        .clickable-area {
             position: absolute;
-            top: 20px;
-            left: 20px;
-            padding: 10px 20px;
-            background-color: rgba(255, 255, 255, 0.8);
-            border: none;
-            border-radius: 5px;
             cursor: pointer;
-            font-size: 16px;
+            background-color: rgba(255, 255, 255, 0);
+        }
+        #itzuli {
+            background-color: rgba(255, 255, 255, 0) !important;
+            transition: none !important;
+        }
+        #itzuli {
+            top: 2%;
+            left: 1%;
+            width: 15%;
+            height: 10%;
         }
     </style>
 </head>
 <body>
     <div class="background-container">
         <img src="resources/ABISUAK_IKUSI.png" alt="Abisuak Background" class="background-image">
-        <button class="back-button" onclick="window.location.href='menu.php'">Itzuli</button>
+        <div id="itzuli" class="clickable-area" onclick="window.location.href='menu.php'"></div>
     </div>
 </body>
 </html>
