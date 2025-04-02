@@ -1,6 +1,8 @@
 <?php
 session_start();
 require_once 'config.php';
+require_once 'classes/Erreserba.php';
+require_once 'classes/ErreserbaElementua.php';
 
 if (!isset($_SESSION['erabiltzailea'])) {
     header('Content-Type: application/json');
@@ -31,26 +33,8 @@ if ($date < $gaur || $date > $fechaLimite) {
 }
 
 try {
-    // Verificar si el espacio ya está reservado
-    $checkSql = "SELECT COUNT(*) FROM erreserba 
-                 WHERE id_espazioa = :space 
-                 AND data = :date 
-                 AND mota = :type";
-    $checkStmt = $pdo->prepare($checkSql);
-    $checkStmt->execute([
-        ':space' => $space,
-        ':date' => $date,
-        ':type' => $type
-    ]);
-    
-    if ($checkStmt->fetchColumn() > 0) {
-        header('Content-Type: application/json');
-        echo json_encode(['error' => 'Espazioa dagoeneko erreserbatuta dago']);
-        exit();
-    }
-
     // Verificar si el espacio existe y está disponible
-    $checkSpaceSql = "SELECT egoera FROM espazioa WHERE id = :space";
+    $checkSpaceSql = "SELECT egoera FROM espazioa WHERE idEspazioa = :space";
     $checkSpaceStmt = $pdo->prepare($checkSpaceSql);
     $checkSpaceStmt->execute([':space' => $space]);
     $spaceStatus = $checkSpaceStmt->fetchColumn();
@@ -67,21 +51,28 @@ try {
         exit();
     }
 
-    // Insertar la nueva reserva
-    $sql = "INSERT INTO erreserba (id_bazkidea, id_espazioa, data, mota) 
-            VALUES (:idBazkidea, :space, :date, :type)";
+    $erreserbaElementua = new ErreserbaElementua();
     
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute([
-        ':idBazkidea' => $idBazkidea,
-        ':space' => $space,
-        ':date' => $date,
-        ':type' => $type
-    ]);
+    // Verificar si el espacio ya está reservado
+    if ($erreserbaElementua->erreEleEgiaztatu($space, $date, $type)) {
+        header('Content-Type: application/json');
+        echo json_encode(['error' => 'Espazioa dagoeneko erreserbatuta dago']);
+        exit();
+    }
+    
+    // Crear nueva reserva
+    $erreserba = new Erreserba();
+    $idErreserba = $erreserba->erreserbaSartu($idBazkidea, $type, $date);
+    
+    // Añadir elemento de reserva
+    $erreserbaElementua->erreEleGehitu($idErreserba, $space);
+    
+    // Actualizar comensales
+    $erreserba->erreserbaEguneratu($idErreserba);
     
     header('Content-Type: application/json');
-    echo json_encode(['success' => true]);
-} catch (PDOException $e) {
+    echo json_encode(['success' => true, 'message' => 'Erreserba ondo gorde da']);
+} catch (Exception $e) {
     header('Content-Type: application/json');
-    echo json_encode(['error' => 'Database error: ' . $e->getMessage()]);
+    echo json_encode(['error' => 'Errorea erreserba egiterakoan: ' . $e->getMessage()]);
 }
