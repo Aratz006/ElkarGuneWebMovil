@@ -9,11 +9,25 @@ if (!isset($_SESSION['erabiltzailea'])) {
 
 try {
     $erabiltzailea = $_SESSION['erabiltzailea'];
-    $sql = "SELECT idFaktura AS 'Faktura Zenbakia', data AS 'Data', totala AS 'Totala' FROM fakturak WHERE idBazkidea = :bazkideZkia ORDER BY idFaktura DESC";
+    // Debug: Mostrar ID del usuario
+    echo "<!-- Debug: ID Usuario = " . htmlspecialchars($erabiltzailea) . " -->";
+    
+    $sql = "SELECT idFaktura AS 'Faktura Zenbakia', data AS 'Data', totala AS 'Totala' 
+           FROM fakturak 
+           WHERE idBazkidea = :bazkideZkia 
+           ORDER BY idFaktura DESC";
+    
     $stmt = $pdo->prepare($sql);
     $stmt->bindParam(':bazkideZkia', $erabiltzailea);
     $stmt->execute();
     $fakturak = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    
+    // Debug: Mostrar número de facturas encontradas
+    echo "<!-- Debug: Número de facturas encontradas = " . count($fakturak) . " -->";
+    
+    // Debug: Mostrar la consulta SQL con el valor real
+    $debugSql = str_replace(':bazkideZkia', $erabiltzailea, $sql);
+    echo "<!-- Debug: SQL Query = " . htmlspecialchars($debugSql) . " -->";
 } catch (PDOException $e) {
     error_log("Error en la consulta SQL: " . $e->getMessage());
     $fakturak = [];

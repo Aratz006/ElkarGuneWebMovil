@@ -15,6 +15,16 @@ try {
     echo "<!-- Debug: ID Bazkidea = " . htmlspecialchars($idBazkidea) . " -->";
     echo "<!-- Debug: Current Date = " . htmlspecialchars($currentDate) . " -->";
 
+    // Primero verificar si el usuario existe en la tabla bazkidea
+    $checkUser = "SELECT idBazkidea FROM bazkidea WHERE idBazkidea = :idBazkidea";
+    $checkStmt = $pdo->prepare($checkUser);
+    $checkStmt->execute([':idBazkidea' => $idBazkidea]);
+    
+    if (!$checkStmt->fetch()) {
+        echo "<!-- Debug: Usuario no encontrado en la tabla bazkidea -->";
+        throw new PDOException("Usuario no encontrado en la tabla bazkidea");
+    }
+
     $sql = "SELECT CONCAT(b.izena, ' ', b.abizenak) AS 'Bazkidea', 
                    e.idErreserba AS 'Erreserba zenbakia', 
                    e.data AS 'Data', 
@@ -25,13 +35,16 @@ try {
             FROM erreserba e 
             JOIN bazkidea b ON e.idBazkidea = b.idBazkidea 
             WHERE e.idBazkidea = :idBazkidea 
-            ORDER BY e.data DESC";
+            AND DATE(e.data) < CURDATE() 
+            ORDER BY e.idErreserba ASC";
 
     $stmt = $pdo->prepare($sql);
-    $stmt->execute([
-        ':idBazkidea' => $idBazkidea
-    ]);
+    $stmt->execute([':idBazkidea' => $idBazkidea]);
     $reservations = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    
+    // Debug: Mostrar la consulta SQL con el valor real
+    $debugSql = str_replace(':idBazkidea', $idBazkidea, $sql);
+    echo "<!-- Debug: SQL Query = " . htmlspecialchars($debugSql) . " -->";
     
     // Debug: Mostrar número de resultados
     echo "<!-- Debug: Número de reservas encontradas = " . count($reservations) . " -->";
