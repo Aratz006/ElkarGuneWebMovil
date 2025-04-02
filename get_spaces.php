@@ -18,11 +18,18 @@ if (empty($date)) {
 }
 
 try {
-    $sql = "SELECT e.id, e.egoera, 
-            CASE WHEN r.id IS NOT NULL THEN 1 ELSE 0 END as reserved
+    $sql = "SELECT e.idEspazioa, e.egoera, e.izena, e.gaitasuna,
+            CASE WHEN ee.idErreserba IS NOT NULL THEN 1 ELSE 0 END as reserved,
+            r.idBazkidea,
+            CASE 
+                WHEN e.egoera = 0 THEN 'Libre'
+                WHEN e.egoera = 1 THEN 'Okupatuta'
+                WHEN e.egoera = 2 THEN 'Mantentze-lanetan'
+                ELSE 'Ezezaguna'
+            END as egoera_testua
             FROM espazioa e
-            LEFT JOIN erreserba r ON e.id = r.id_espazioa 
-            AND r.data = :date AND r.mota = :type";
+            LEFT JOIN erreserbaelementua ee ON e.idEspazioa = ee.idEspazioa 
+            LEFT JOIN erreserba r ON ee.idErreserba = r.idErreserba AND r.data = :date AND r.mota = :type";
     
     $stmt = $pdo->prepare($sql);
     $stmt->execute([

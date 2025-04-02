@@ -8,8 +8,8 @@ if (!isset($_SESSION['erabiltzailea'])) {
 }
 
 $idBazkidea = $_SESSION['erabiltzailea'];
-$mota = isset($_POST['mota']) ? $_POST['mota'] : 0;
-$erreserbaData = isset($_POST['data']) ? $_POST['data'] : '';
+$mota = isset($_POST['mota']) ? $_POST['mota'] : 0; // Por defecto Bazkaria (0)
+$erreserbaData = isset($_POST['data']) ? $_POST['data'] : date('Y-m-d'); // Fecha actual por defecto
 $gaur = date('Y-m-d');
 $fechaLimite = date('Y-m-d', strtotime('+2 months'));
 
@@ -112,28 +112,28 @@ function actualizarColoresEspacios() {
         }
         .header {
             position: absolute;
-            top: 20px;
-            left: 20px;
+            top: 2vh;
+            left: 2vh;
             z-index: 10;
         }
         .back-button {
             opacity: 0;
-            width: 50px;
-            height: 50px;
+            width: 8vh;
+            height: 8vh;
             cursor: pointer;
             position: absolute;
         }
         .reservation-type {
             position: absolute;
-            top: 30%;
-            left: 69%;
+            top: 30vh;
+            left: 69vw;
             transform: translateX(-50%);
             display: flex;
             flex-direction: column;
             align-items: center;
-            width: 32%;
+            width: 32vw;
             z-index: 10;
-            height: 11%;
+            height: 11vh;
         }
         .type-button {
             opacity: 0;
@@ -154,43 +154,38 @@ function actualizarColoresEspacios() {
         }
         .date-selector {
             position: absolute;
-            top: 15.9%;
-            left: 73%;
+            top: 15.9vh;
+            left: 73vw;
             transform: translateX(-50%);
             z-index: 10;
-            padding: 10px;
+            padding: 1vh;
             background-color: rgba(255, 255, 255, 0.9);
             border-radius: 8px;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            width: 25vw;
+            max-width: 300px;
         }
         .date-input {
-            padding: 15px;
+            padding: 1vh;
             border: 2px solid #ddd;
             border-radius: 8px;
-            font-size: 1.2em;
-            width: 200px;
+            font-size: 2.5vh;
+            width: 100%;
             cursor: pointer;
-        }
-        .date-input:hover {
-            border-color: #ffd700;
-        }
-        .date-input:focus {
-            outline: none;
-            border-color: #ffd700;
-            box-shadow: 0 0 5px rgba(255, 215, 0, 0.3);
+            box-sizing: border-box;
         }
         .spaces-grid {
             position: relative;
             flex-grow: 1;
             display: flex;
             flex-wrap: wrap;
-            gap: 10px;
-            padding: 20px;
+            gap: 1vh;
+            padding: 2vh;
         }
         .space {
             position: absolute;
-            width: 80px;
-            height: 80px;
+            width: 10vh;
+            height: 10vh;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -198,17 +193,18 @@ function actualizarColoresEspacios() {
             cursor: pointer;
             font-weight: bold;
             transition: transform 0.3s;
+            font-size: 1.8vh;
         }
-        .space:nth-child(1) { top: 20%; left: 30%; }
-        .space:nth-child(2) { top: 42%; left: 30%; }
-        .space:nth-child(3) { top: 65%; left: 30%; }
-        .space:nth-child(4) { top: 16%; left: 41.5%; }
-        .space:nth-child(5) { top: 32%; left: 41.5%; }
-        .space:nth-child(6) { top: 49%; left: 41.5%; }
-        .space:nth-child(7) { top: 65%; left: 41.5%; }
-        .space:nth-child(8) { top:85%; left: 28.65%; }
-        .space:nth-child(9) { top: 85%; left: 35.2%; }
-        .space:nth-child(10) { top: 85%; left: 41.8%; }
+        .space:nth-child(1) { top: 20vh; left: 30vw; }
+        .space:nth-child(2) { top: 42vh; left: 30vw; }
+        .space:nth-child(3) { top: 65vh; left: 30vw; }
+        .space:nth-child(4) { top: 16vh; left: 41.5vw; }
+        .space:nth-child(5) { top: 32vh; left: 41.5vw; }
+        .space:nth-child(6) { top: 49vh; left: 41.5vw; }
+        .space:nth-child(7) { top: 65vh; left: 41.5vw; }
+        .space:nth-child(8) { top: 85vh; left: 28.65vw; }
+        .space:nth-child(9) { top: 85vh; left: 35.2vw; }
+        .space:nth-child(10) { top: 85vh; left: 41.8vw; }
         .space.gris {
             background-color: rgba(0, 0, 0, 0.2);
             color: rgb(0, 0, 0);
@@ -230,47 +226,41 @@ function actualizarColoresEspacios() {
             cursor: pointer;
         }
         .confirm-button {
-            padding: 15px 30px;
+            padding: 2vh 4vw;
             background-color: #ffd700;
             border: none;
-            border-radius: 5px;
+            border-radius: 1vh;
             cursor: pointer;
-            width: calc(100% - 40px);
-            margin: 20px;
+            width: calc(100% - 4vh);
+            margin: 2vh;
             font-weight: bold;
-            font-size: 1.1em;
-        }
-        #fecha {
-            border: none;
-            background: transparent;
-            font-size: 16px;
-            cursor: pointer;
-        }
-        #tipo-reserva {
-            display: none;
-        }
-        }
-        .confirm-button:hover {
-            background-color: #e6c200;
+            font-size: 2.5vh;
+            position: fixed;
+            bottom: 2vh;
+            left: 0;
+            z-index: 100;
         }
         .reservations-table {
             position: absolute;
-            top: 45%;
-            left: 73%;
+            top: 45vh;
+            left: 73vw;
             transform: translateX(-50%);
             background-color: rgba(255, 255, 255, 0.9);
-            border-radius: 8px;
-            padding: 15px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            width: 300px;
+            border-radius: 1vh;
+            padding: 2vh;
+            box-shadow: 0 0.5vh 2vh rgba(0, 0, 0, 0.1);
+            width: 40vw;
+            max-height: 40vh;
+            overflow-y: auto;
         }
         .reservations-table table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 10px;
+            margin-top: 1vh;
+            font-size: 1.8vh;
         }
         .reservations-table th, .reservations-table td {
-            padding: 8px;
+            padding: 1vh;
             text-align: left;
             border-bottom: 1px solid #ddd;
         }
@@ -355,15 +345,19 @@ function actualizarColoresEspacios() {
             }
             document.querySelectorAll('.space').forEach(space => {
                 const spaceId = space.dataset.id;
-                const spaceData = data.spaces.find(s => s.id === spaceId);
+                const spaceData = data.spaces.find(s => s.idEspazioa === spaceId);
                 
                 if (spaceData) {
-                    if (spaceData.egoera !== 0) {
+                    if (spaceData.egoera === 2) { // Mantentze-lanetan
                         space.className = 'space negro';
                     } else if (spaceData.reserved) {
-                        space.className = 'space rojo';
+                        if (spaceData.idBazkidea === '<?php echo $idBazkidea; ?>') {
+                            space.className = 'space azul'; // Reservado por el usuario actual
+                        } else {
+                            space.className = 'space rojo'; // Reservado por otro usuario
+                        }
                     } else {
-                        space.className = 'space gris';
+                        space.className = 'space gris'; // Disponible
                     }
                 }
             });
