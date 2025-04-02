@@ -1,8 +1,45 @@
 <?php
 session_start();
+require_once 'config.php';
+
 if (!isset($_SESSION['erabiltzailea'])) {
     header('Location: index.html');
     exit();
+}
+
+$idBazkidea = $_SESSION['erabiltzailea'];
+$currentDate = date('Y-m-d');
+
+try {
+    // Verificar la sesión del usuario
+    echo "<!-- Debug: ID Bazkidea = " . htmlspecialchars($idBazkidea) . " -->";
+    echo "<!-- Debug: Current Date = " . htmlspecialchars($currentDate) . " -->";
+
+    $sql = "SELECT CONCAT(b.izena, ' ', b.abizenak) AS 'Bazkidea', 
+                   e.idErreserba AS 'Erreserba zenbakia', 
+                   e.data AS 'Data', 
+                   CASE e.mota 
+                       WHEN 0 THEN 'Bazkaria' 
+                       WHEN 1 THEN 'Afaria' 
+                   END AS 'Mota' 
+            FROM erreserba e 
+            JOIN bazkidea b ON e.idBazkidea = b.idBazkidea 
+            WHERE e.idBazkidea = :idBazkidea 
+            ORDER BY e.data DESC";
+
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute([
+        ':idBazkidea' => $idBazkidea
+    ]);
+    $reservations = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    
+    // Debug: Mostrar número de resultados
+    echo "<!-- Debug: Número de reservas encontradas = " . count($reservations) . " -->";
+} catch (PDOException $e) {
+    // Log del error
+    error_log("Error en la consulta SQL: " . $e->getMessage());
+    echo "<!-- Error: " . htmlspecialchars($e->getMessage()) . " -->";
+    $reservations = [];
 }
 ?>
 <!DOCTYPE html>
@@ -13,6 +50,47 @@ if (!isset($_SESSION['erabiltzailea'])) {
     <meta http-equiv="ScreenOrientation" content="autoRotate:disabled">
     <title>Erreserba Historikoa</title>
     <style>
+        .table-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            border-radius: 10px;
+            width: 80%;
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            font-family: Arial, sans-serif;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #ffd700;
+            color: black;
+        }
+
+        tr:hover {
+            background-color: rgba(255, 215, 0, 0.1);
+        }
+
+        .no-reservations {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+
         @media screen and (orientation: portrait) {
             body {
                 transform: rotate(-90deg);
@@ -66,6 +144,33 @@ if (!isset($_SESSION['erabiltzailea'])) {
     <div class="background-container">
         <img src="resources/ERRESERBA_HISTORIKOA.png" alt="Erreserba Historikoa Background" class="background-image">
         <div id="itzuli" class="clickable-area" onclick="window.location.href='menu.php'"></div>
+        
+        <div class="table-container">
+            <?php if (count($reservations) > 0): ?>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Bazkidea</th>
+                            <th>Erreserba zenbakia</th>
+                            <th>Data</th>
+                            <th>Mota</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($reservations as $reservation): ?>
+                            <tr>
+                                <td><?php echo htmlspecialchars($reservation['Bazkidea']); ?></td>
+                                <td><?php echo htmlspecialchars($reservation['Erreserba zenbakia']); ?></td>
+                                <td><?php echo htmlspecialchars($reservation['Data']); ?></td>
+                                <td><?php echo htmlspecialchars($reservation['Mota']); ?></td>
+                            </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            <?php else: ?>
+                <div class="no-reservations">Ez dago erreserba historikorik</div>
+            <?php endif; ?>
+        </div>
     </div>
 </body>
 </html>
