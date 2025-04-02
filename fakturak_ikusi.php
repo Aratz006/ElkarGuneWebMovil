@@ -1,8 +1,22 @@
 <?php
 session_start();
+require_once 'config.php';
+
 if (!isset($_SESSION['erabiltzailea'])) {
     header('Location: index.html');
     exit();
+}
+
+try {
+    $erabiltzailea = $_SESSION['erabiltzailea'];
+    $sql = "SELECT idFaktura AS 'Faktura Zenbakia', data AS 'Data', totala AS 'Totala' FROM fakturak WHERE idBazkidea = :bazkideZkia ORDER BY idFaktura DESC";
+    $stmt = $pdo->prepare($sql);
+    $stmt->bindParam(':bazkideZkia', $erabiltzailea);
+    $stmt->execute();
+    $fakturak = $stmt->fetchAll(PDO::FETCH_ASSOC);
+} catch (PDOException $e) {
+    error_log("Error en la consulta SQL: " . $e->getMessage());
+    $fakturak = [];
 }
 ?>
 <!DOCTYPE html>
@@ -13,6 +27,47 @@ if (!isset($_SESSION['erabiltzailea'])) {
     <meta http-equiv="ScreenOrientation" content="autoRotate:disabled">
     <title>Fakturak Ikusi</title>
     <style>
+        .table-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            border-radius: 10px;
+            width: 80%;
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            font-family: Arial, sans-serif;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #ffd700;
+            color: black;
+        }
+
+        tr:hover {
+            background-color: rgba(255, 215, 0, 0.1);
+        }
+
+        .no-fakturak {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+
         @media screen and (orientation: portrait) {
             body {
                 transform: rotate(-90deg);
@@ -66,6 +121,31 @@ if (!isset($_SESSION['erabiltzailea'])) {
     <div class="background-container">
         <img src="resources/FAKTURAK_IKUSI.png" alt="Fakturak Background" class="background-image">
         <div id="itzuli" class="clickable-area" onclick="window.location.href='menu.php'"></div>
+        
+        <div class="table-container">
+            <?php if (count($fakturak) > 0): ?>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Faktura Zenbakia</th>
+                            <th>Data</th>
+                            <th>Totala</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($fakturak as $faktura): ?>
+                            <tr>
+                                <td><?php echo htmlspecialchars($faktura['Faktura Zenbakia']); ?></td>
+                                <td><?php echo htmlspecialchars($faktura['Data']); ?></td>
+                                <td><?php echo htmlspecialchars($faktura['Totala']); ?></td>
+                            </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            <?php else: ?>
+                <div class="no-fakturak">Ez dago fakturik</div>
+            <?php endif; ?>
+        </div>
     </div>
 </body>
 </html>
