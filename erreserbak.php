@@ -75,208 +75,9 @@ function actualizarColoresEspacios() {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta http-equiv="ScreenOrientation" content="autoRotate:disabled">
+    <meta http-equiv="ScreenOrientation" content="landscape">
     <title>Erreserbak</title>
-    <style>
-        @media screen and (orientation: portrait) {
-            body {
-                transform: rotate(-90deg);
-                transform-origin: left top;
-                width: 100vh;
-                height: 100vw;
-                position: absolute;
-                top: 100%;
-                left: 0;
-            }
-        }
-        body, html {
-            margin: 0;
-            padding: 0;
-            height: 100%;
-            width: 100%;
-            overflow: hidden;
-            font-family: Arial, sans-serif;
-        }
-        body {
-            background-image: url('resources/ERRESERBAK.png');
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            position: relative;
-        }
-        .container {
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            position: relative;
-        }
-        .header {
-            position: absolute;
-            top: 2vh;
-            left: 2vh;
-            z-index: 10;
-        }
-        .back-button {
-            opacity: 0;
-            width: 8vh;
-            height: 8vh;
-            cursor: pointer;
-            position: absolute;
-        }
-        .reservation-type {
-            position: absolute;
-            top: 30vh;
-            left: 69vw;
-            transform: translateX(-50%);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            width: 32vw;
-            z-index: 10;
-            height: 11vh;
-        }
-        .type-button {
-            opacity: 0;
-            width: 45%;
-            height: 80%;
-            cursor: pointer;
-            position: absolute;
-        }
-        .type-button:first-child {
-            position: absolute;
-            left: 10%;
-            top: 50%;
-        }
-        .type-button:last-child {
-            position: absolute;
-            left: 53.5%;
-            top: 10%;
-        }
-        .date-selector {
-            position: absolute;
-            top: 15.9vh;
-            left: 73vw;
-            transform: translateX(-50%);
-            z-index: 10;
-            padding: 1vh;
-            background-color: rgba(255, 255, 255, 0.9);
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            width: 25vw;
-            max-width: 300px;
-        }
-        .date-input {
-            padding: 1vh;
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            font-size: 2.5vh;
-            width: 100%;
-            cursor: pointer;
-            box-sizing: border-box;
-        }
-        .spaces-grid {
-            position: relative;
-            flex-grow: 1;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 1vh;
-            padding: 2vh;
-        }
-        .space {
-            position: absolute;
-            width: 10vh;
-            height: 10vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 50%;
-            cursor: pointer;
-            font-weight: bold;
-            transition: transform 0.3s;
-            font-size: 1.8vh;
-        }
-        .space:nth-child(1) { top: 20vh; left: 30vw; }
-        .space:nth-child(2) { top: 42vh; left: 30vw; }
-        .space:nth-child(3) { top: 65vh; left: 30vw; }
-        .space:nth-child(4) { top: 16vh; left: 41.5vw; }
-        .space:nth-child(5) { top: 32vh; left: 41.5vw; }
-        .space:nth-child(6) { top: 49vh; left: 41.5vw; }
-        .space:nth-child(7) { top: 65vh; left: 41.5vw; }
-        .space:nth-child(8) { top: 85vh; left: 28.65vw; }
-        .space:nth-child(9) { top: 85vh; left: 35.2vw; }
-        .space:nth-child(10) { top: 85vh; left: 41.8vw; }
-        .space.gris {
-            background-color: rgba(0, 0, 0, 0.2);
-            color: rgb(0, 0, 0);
-            cursor: pointer;
-        }
-        .space.negro {
-            background-color: rgba(0, 0, 0, 1);
-            color: white;
-            cursor: not-allowed;
-        }
-        .space.rojo {
-            background-color: rgba(255, 0, 0, 0.2);
-            color: rgb(255, 0, 0);
-            cursor: not-allowed;
-        }
-        .space.azul {
-            background-color: rgba(0, 20, 255, 0.2);
-            color: rgb(0, 20, 255);
-            cursor: pointer;
-        }
-        .confirm-button {
-            padding: 2vh 4vw;
-            background-color: #ffd700;
-            border: none;
-            border-radius: 1vh;
-            cursor: pointer;
-            width: calc(100% - 4vh);
-            margin: 2vh;
-            font-weight: bold;
-            font-size: 2.5vh;
-            position: fixed;
-            bottom: 2vh;
-            left: 0;
-            z-index: 100;
-        }
-        .reservations-table {
-            position: absolute;
-            top: 45vh;
-            left: 73vw;
-            transform: translateX(-50%);
-            background-color: rgba(255, 255, 255, 0.9);
-            border-radius: 1vh;
-            padding: 2vh;
-            box-shadow: 0 0.5vh 2vh rgba(0, 0, 0, 0.1);
-            width: 40vw;
-            max-height: 40vh;
-            overflow-y: auto;
-        }
-        .reservations-table table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 1vh;
-            font-size: 1.8vh;
-        }
-        .reservations-table th, .reservations-table td {
-            padding: 1vh;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
-        }
-        .reservations-table th {
-            background-color: #ffd700;
-            color: black;
-        }
-        .reservations-table tr:hover {
-            background-color: rgba(255, 215, 0, 0.1);
-        }
-        .no-reservations {
-            text-align: center;
-            padding: 15px;
-            color: #666;
-        }
-    </style>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="container">
@@ -303,13 +104,14 @@ function actualizarColoresEspacios() {
             foreach ($espazioak as $espazio) {
                 $class = $espazio['egoera'] == 0 ? 'available' : 'unavailable';
                 echo "<div class='space {$class}' data-id='{$espazio['idEspazioa']}'>"
-                    . "Espazioa " . $espazio['idEspazioa']
+                    . $espazio['idEspazioa']
                     . "</div>";
             }
             ?>
         </div>
 
-        <button class="confirm-button" onclick="confirmReservation()">Erreserbatu</button>
+        <button class="confirm-button" onclick="confirmReservation()"></button>
+        <button class="cancel-button" onclick="window.location.href='menu.php'"></button>
     </div>
 
     <script>

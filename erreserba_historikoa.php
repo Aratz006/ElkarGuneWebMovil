@@ -7,27 +7,30 @@ if (!isset($_SESSION['erabiltzailea'])) {
     exit();
 }
 
-$idBazkidea = $_SESSION['erabiltzailea'];
+$erabiltzailea = $_SESSION['erabiltzailea'];
 $currentDate = date('Y-m-d');
 
 try {
     // Verificar la sesión del usuario
-    echo "<!-- Debug: ID Bazkidea = " . htmlspecialchars($idBazkidea) . " -->";
+    echo "<!-- Debug: Erabiltzailea = " . htmlspecialchars($erabiltzailea) . " -->";
     echo "<!-- Debug: Current Date = " . htmlspecialchars($currentDate) . " -->";
 
-    // Primero verificar si el usuario existe en la tabla bazkidea
-    $checkUser = "SELECT idBazkidea FROM bazkidea WHERE idBazkidea = :idBazkidea";
-    $checkStmt = $pdo->prepare($checkUser);
-    $checkStmt->execute([':idBazkidea' => $idBazkidea]);
+    // Obtener el idBazkidea usando el erabiltzailea
+    $getBazkideId = "SELECT idBazkidea FROM bazkidea WHERE erabiltzailea = :erabiltzailea";
+    $bazkideStmt = $pdo->prepare($getBazkideId);
+    $bazkideStmt->execute([':erabiltzailea' => $erabiltzailea]);
     
-    if (!$checkStmt->fetch()) {
+    $bazkideData = $bazkideStmt->fetch(PDO::FETCH_ASSOC);
+    if (!$bazkideData) {
         echo "<!-- Debug: Usuario no encontrado en la tabla bazkidea -->";
         throw new PDOException("Usuario no encontrado en la tabla bazkidea");
     }
+    $idBazkidea = $bazkideData['idBazkidea'];
+    echo "<!-- Debug: ID Bazkidea encontrado = " . htmlspecialchars($idBazkidea) . " -->";
 
     $sql = "SELECT CONCAT(b.izena, ' ', b.abizenak) AS 'Bazkidea', 
                    e.idErreserba AS 'Erreserba zenbakia', 
-                   e.data AS 'Data', 
+                   DATE_FORMAT(e.data, '%Y-%m-%d %H:%i') AS 'Data', 
                    CASE e.mota 
                        WHEN 0 THEN 'Bazkaria' 
                        WHEN 1 THEN 'Afaria' 
@@ -36,7 +39,7 @@ try {
             JOIN bazkidea b ON e.idBazkidea = b.idBazkidea 
             WHERE e.idBazkidea = :idBazkidea 
             AND DATE(e.data) < CURDATE() 
-            ORDER BY e.idErreserba ASC";
+            ORDER BY e.data DESC";
 
     $stmt = $pdo->prepare($sql);
     $stmt->execute([':idBazkidea' => $idBazkidea]);

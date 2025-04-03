@@ -9,16 +9,28 @@ if (!isset($_SESSION['erabiltzailea'])) {
 
 try {
     $erabiltzailea = $_SESSION['erabiltzailea'];
-    // Debug: Mostrar ID del usuario
-    echo "<!-- Debug: ID Usuario = " . htmlspecialchars($erabiltzailea) . " -->";
+    echo "<!-- Debug: Erabiltzailea = " . htmlspecialchars($erabiltzailea) . " -->";
+
+    // Obtener el idBazkidea usando el erabiltzailea
+    $getBazkideId = "SELECT idBazkidea FROM bazkidea WHERE erabiltzailea = :erabiltzailea";
+    $bazkideStmt = $pdo->prepare($getBazkideId);
+    $bazkideStmt->execute([':erabiltzailea' => $erabiltzailea]);
     
+    $bazkideData = $bazkideStmt->fetch(PDO::FETCH_ASSOC);
+    if (!$bazkideData) {
+        echo "<!-- Debug: Usuario no encontrado en la tabla bazkidea -->";
+        throw new PDOException("Usuario no encontrado en la tabla bazkidea");
+    }
+    $idBazkidea = $bazkideData['idBazkidea'];
+    echo "<!-- Debug: ID Bazkidea encontrado = " . htmlspecialchars($idBazkidea) . " -->";
+
     $sql = "SELECT idFaktura AS 'Faktura Zenbakia', data AS 'Data', totala AS 'Totala' 
            FROM fakturak 
            WHERE idBazkidea = :bazkideZkia 
            ORDER BY idFaktura DESC";
     
     $stmt = $pdo->prepare($sql);
-    $stmt->bindParam(':bazkideZkia', $erabiltzailea);
+    $stmt->bindParam(':bazkideZkia', $idBazkidea);
     $stmt->execute();
     $fakturak = $stmt->fetchAll(PDO::FETCH_ASSOC);
     
