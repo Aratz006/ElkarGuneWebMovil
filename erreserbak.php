@@ -149,7 +149,22 @@ function actualizarColoresEspacios() {
         updateSpaces();
     }
     function erreserbaElemInsert() {
-        
+        const selectedSpace = event.target;
+        // Solo permitir selección si el espacio no está en mantenimiento ni reservado por otro usuario
+        if (!selectedSpace.classList.contains('negro') && !selectedSpace.classList.contains('rojo')) {
+            // Remover selección previa de todos los espacios
+            document.querySelectorAll('.space').forEach(s => {
+                s.classList.remove('selected');
+                s.classList.remove('azul');
+            });
+            // Marcar el espacio actual como seleccionado
+            selectedSpace.classList.add('selected');
+            selectedSpace.classList.add('azul');
+        } else if (selectedSpace.classList.contains('negro')) {
+            alert('Espazio hau mantentze-lanetan dago eta ezin da aukeratu.');
+        } else if (selectedSpace.classList.contains('rojo')) {
+            alert('Espazio hau beste erabiltzaile batek erreserbatuta dago.');
+        }
     }
 
     function updateSpaces() {
@@ -261,7 +276,7 @@ function actualizarColoresEspacios() {
             return;
         }
 
-        if (confirm('Erreserba egitera/eguneratzera zoaz. Erreserbaren datuak ongi daude?')) {
+        if (confirm('Erreserba egitera/eguneratzera zoaz. Erreserbaren datuak zuzenak dira?')) {
             // Primero verificamos si ya existe una reserva para este usuario en esta fecha y tipo
             fetch('check_reservation.php', {
                 method: 'POST',
@@ -374,9 +389,9 @@ function actualizarColoresEspacios() {
                 this.classList.add('selected');
                 this.classList.add('azul');
             } else if (this.classList.contains('negro')) {
-                alert('Este espacio está en mantenimiento y no puede ser seleccionado.');
+                alert('Espazio hau mantentze-lanetan dago eta ezin da aukeratu.');
             } else if (this.classList.contains('rojo')) {
-                alert('Este espacio ya está reservado por otro usuario.');
+                alert('Espazio hau beste erabiltzaile batek erreserbatuta dago.');
             }
         });
     });
