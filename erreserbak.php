@@ -119,7 +119,8 @@ function actualizarColoresEspacios() {
             <?php
             $espazioak = getEspazioakEgoera();
             foreach ($espazioak as $espazio) {
-                $class = $espazio['egoera'] == 0 ? 'available' : 'unavailable';
+                $class = $espazio['egoera'] == 0 ? 'unavailable' : 'available';
+                //echo "class= {$class}";
                 echo "<div class='space {$class}' data-id='{$espazio['idEspazioa']}' value='{$espazio['idEspazioa']}'>";
                 echo $espazio['idEspazioa'];
                 echo "</div>";
@@ -141,17 +142,19 @@ function actualizarColoresEspacios() {
     }
     function erreserbaElemInsert() {
         const selectedSpace = event.target;
-        if (!selectedSpace.classList.contains('negro') && !selectedSpace.classList.contains('rojo')) {
+        if (!selectedSpace.classList.contains('available') && !selectedSpace.classList.contains('rojo')) {
             document.querySelectorAll('.space').forEach(s => {
                 s.classList.remove('selected');
                 s.classList.remove('azul');
             });
             selectedSpace.classList.add('selected');
             selectedSpace.classList.add('azul');
-        } else if (selectedSpace.classList.contains('negro')) {
+        } else if (selectedSpace.classList.contains('unavailable')) {
             alert('Espazio hau mantentze-lanetan dago eta ezin da aukeratu.');
         } else if (selectedSpace.classList.contains('rojo')) {
             alert('Espazio hau beste erabiltzaile batek erreserbatuta dago.');
+            s.classList.remove('selected');
+            s.classList.remove('rojo');
         }
     }
 
@@ -221,9 +224,9 @@ function actualizarColoresEspacios() {
                 let estado = '';
                 let clase = '';
                 
-                if (space.egoera === 2) {
+                if (space.egoera === 0) {
                     estado = 'Mantentze-lanetan';
-                    clase = 'negro';
+                    clase = 'unavaliable';
                 } else if (space.reserved) {
                     if (space.idBazkidea === '<?php echo $idBazkidea; ?>') {
                         estado = 'Zure erreserba';
@@ -234,7 +237,7 @@ function actualizarColoresEspacios() {
                     }
                 } else {
                     estado = 'Libre';
-                    clase = 'gris';
+                    clase = 'available';
                 }
 
                 reservationsHtml += `
@@ -359,22 +362,30 @@ function actualizarColoresEspacios() {
 
     document.getElementById('reservationDate').addEventListener('change', updateSpaces);
 
+    let selectedSpaces = [];
+
     document.querySelectorAll('.space').forEach(space => {
         space.addEventListener('click', function() {
-            // Solo permitir selección si el espacio no está en mantenimiento ni reservado por otro usuario
-            if (!this.classList.contains('negro') && !this.classList.contains('rojo')) {
-                // Remover selección previa de todos los espacios
-                document.querySelectorAll('.space').forEach(s => {
-                    s.classList.remove('selected');
-                    s.classList.remove('azul');
-                });
-                // Marcar el espacio actual como seleccionado
+            if (this.classList.contains('rojo')) {
+                alert('Espazio hau beste erabiltzaile batengatik erreserbatuta dago.');
+                return;
+            }
+            if (this.classList.contains('unavailable')) {
+                alert('Espazio hau aukeraezina dago mantentze lanak direla eta.');
+                return;
+            }
+            
+            const spaceId = this.dataset.id;
+            const index = selectedSpaces.indexOf(spaceId);
+            
+            if (index === -1) {
+                selectedSpaces.push(spaceId);
                 this.classList.add('selected');
                 this.classList.add('azul');
-            } else if (this.classList.contains('negro')) {
-                alert('Espazio hau aukeraezina dago mantentze lanak direla eta.');
-            } else if (this.classList.contains('rojo')) {
-                alert('Espazio hau beste erabiltzaile batengatik erreserbatuta dago.');
+            } else {
+                selectedSpaces.splice(index, 1);
+                this.classList.remove('selected');
+                this.classList.remove('azul');
             }
         });
     });
