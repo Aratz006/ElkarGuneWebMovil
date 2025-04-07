@@ -1,4 +1,3 @@
-/* Estilos generales */
 body, html {
     margin: 0;
     padding: 0;
@@ -8,7 +7,6 @@ body, html {
     font-family: Arial, sans-serif;
 }
 
-/* Estilos para el formulario de inicio de sesión */
 .login-container {
     background-color: white;
     padding: 1rem;
@@ -465,6 +463,7 @@ body {
     color: rgb(255, 0, 0);
     cursor: not-allowed;
     border: 2px solid #ffd700;
+    background-color: rgba(0, 21, 255, 0.3);
 }
 
 .space.azul {
@@ -472,6 +471,7 @@ body {
     color: rgb(0, 20, 255);
     cursor: pointer;
     border: 2px solid #ffd700;
+    background-color: rgba(255, 0, 0, 0.3);
 }
 
 .confirm-button {
@@ -510,16 +510,17 @@ body {
 
 .reservations-table {
     position: absolute;
-    top: 45vh;
+    top: 50vh;
     left: 73vw;
     transform: translateX(-50%);
     background-color: rgba(255, 255, 255, 0.9);
     border-radius: 1vh;
-    padding: 2vh;
     box-shadow: 0 0.5vh 2vh rgba(0, 0, 0, 0.1);
     width: 40vw;
-    max-height: 40vh;
-    overflow-y: auto;
+    height: 20vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
 }
 
 .reservations-table table {
@@ -527,6 +528,99 @@ body {
     border-collapse: collapse;
     margin-top: 1vh;
     font-size: 1.8vh;
+}
+
+.reservations-table thead {
+    position: sticky;
+    top: -2;
+    z-index: 1;
+    background-color: #ffeb3b;
+}
+
+.reservations-table {
+    position: absolute;
+    top: 38.5vh;
+    left: 73vw;
+    transform: translateX(-50%);
+    background-color: rgba(255, 255, 255, 0.9);
+    border-radius: 1vh;
+    padding: 2vh;
+    box-shadow: 0 0.5vh 2vh rgba(0, 0, 0, 0.1);
+    width: 40vw;
+    height: 20vh;
+    overflow: hidden;
+}
+
+.reservations-table table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 1.8vh;
+}
+
+.reservations-table thead {
+    background-color: #ffd700;
+    position: sticky;
+    top: 0;
+    z-index: 2;
+}
+
+.reservations-table tbody {
+    transform: translateY(10px);
+    display: block;
+    max-height: 15vh;
+    overflow-y: auto;
+    scrollbar-color: #ffeb3b rgba(0, 0, 0, 0.1);
+    width: 100%;
+}
+
+.reservations-table thead tr,
+.reservations-table tbody tr {
+    display: table;
+    table-layout: fixed;
+    width: calc(100% - 8px);
+}
+
+.reservations-table th,
+.reservations-table td {
+    padding: 1vh;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+.reservations-table tbody::-webkit-scrollbar {
+    width: 8px;
+}
+
+.reservations-table tbody::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.1);
+}
+
+.reservations-table tbody::-webkit-scrollbar-thumb {
+    background-color: #ffeb3b;
+    border-radius: 4px;
+}
+
+
+.reservations-table tbody::-webkit-scrollbar {
+    width: 8px;
+}
+
+.reservations-table tbody::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 4px;
+}
+
+.reservations-table tbody::-webkit-scrollbar-thumb {
+    background-color: #ffd700;
+    border-radius: 4px;
+    border: 2px solid rgba(0, 0, 0, 0.1);
+}
+
+.reservations-table thead tr,
+.reservations-table tbody tr {
+    display: table;
+    width: 100%;
+    table-layout: fixed;
 }
 
 .reservations-table th, .reservations-table td {
@@ -538,6 +632,9 @@ body {
 .reservations-table th {
     background-color: #ffd700;
     color: black;
+    text-align: left;
+    padding: 1.5vh;
+    font-size: 2vh;
 }
 
 .reservations-table tr:hover {

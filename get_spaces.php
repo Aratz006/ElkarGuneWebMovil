@@ -18,23 +18,38 @@ if (empty($date)) {
 }
 
 try {
-    $sql = "SELECT e.idEspazioa, e.egoera, e.izena, e.gaitasuna,
-            CASE WHEN ee.idErreserba IS NOT NULL THEN 1 ELSE 0 END as reserved,
-            r.idBazkidea,
+    $idBazkidea = $_SESSION['erabiltzailea'];
+    
+    $sql = "SELECT 
+            e.idEspazioa, 
+            e.egoera, 
+            e.izena, 
+            e.gaitasuna,
             CASE 
-                WHEN e.egoera = 0 THEN 'Libre'
-                WHEN e.egoera = 1 THEN 'Okupatuta'
+                WHEN r.idBazkidea = :idBazkidea THEN 'MiReserva'
                 WHEN e.egoera = 2 THEN 'Mantentze-lanetan'
-                ELSE 'Ezezaguna'
-            END as egoera_testua
+                WHEN e.egoera = 1 THEN 'Okupatuta'
+                WHEN ee.idErreserba IS NOT NULL THEN 'Reservado'
+                ELSE 'Libre'
+            END as egoera_testua,
+            CASE 
+                WHEN r.idBazkidea = :idBazkidea THEN 'azul'
+                WHEN e.egoera = 2 THEN 'negro'
+                WHEN ee.idErreserba IS NOT NULL THEN 'rojo'
+                ELSE 'gris'
+            END as color,
+            CASE WHEN ee.idErreserba IS NOT NULL OR e.egoera IN (1, 2) THEN 1 ELSE 0 END as reserved,
+            r.idBazkidea
             FROM espazioa e
             LEFT JOIN erreserbaelementua ee ON e.idEspazioa = ee.idEspazioa 
-            LEFT JOIN erreserba r ON ee.idErreserba = r.idErreserba AND r.data = :date AND r.mota = :type";
-    
+                AND ee.idErreserba IN (SELECT idErreserba FROM erreserba WHERE data = :date AND mota = :type)
+            LEFT JOIN erreserba r ON ee.idErreserba = r.idErreserba";
+
     $stmt = $pdo->prepare($sql);
     $stmt->execute([
         ':date' => $date,
-        ':type' => $type
+        ':type' => $type,
+        ':idBazkidea' => $idBazkidea
     ]);
     
     $spaces = $stmt->fetchAll(PDO::FETCH_ASSOC);

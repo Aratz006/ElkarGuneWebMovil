@@ -3,7 +3,6 @@ session_start();
 require_once 'config.php';
 
 if (!isset($_SESSION['erabiltzailea'])) {
-    header('Location: index.html');
     exit();
 }
 
@@ -23,16 +22,8 @@ function getEspazioakEgoera() {
 
 function getErreserbak($data, $mota) {
     global $pdo;
-    $sql = "SELECT 
-           esp.idEspazioa,
-           esp.egoera,
-           esp.izena AS 'Espazioa',
-           e.idErreserba,
-           e.idBazkidea,
-           e.mota,
-           e.data,
-           e.komentsalak
-           FROM espazioa esp
+    $sql = "SELECT esp.idEspazioa, esp.egoera, esp.izena AS 'Espazioa', e.idErreserba, e.idBazkidea, e.mota, 
+    e.data,e.komentsalak FROM espazioa esp 
            LEFT JOIN erreserbaelementua ee ON esp.idEspazioa = ee.idEspazioa
            LEFT JOIN erreserba e ON ee.idErreserba = e.idErreserba AND e.data = :data AND e.mota = :mota
            ORDER BY esp.idEspazioa ASC";
@@ -110,7 +101,7 @@ function actualizarColoresEspacios() {
 
         <div class="reservations-table">
             <table>
-                <thead>
+                <thead> 
                     <tr>
                         <th>Espazioa</th>
                         <th>Egoera</th>
@@ -129,9 +120,9 @@ function actualizarColoresEspacios() {
             $espazioak = getEspazioakEgoera();
             foreach ($espazioak as $espazio) {
                 $class = $espazio['egoera'] == 0 ? 'available' : 'unavailable';
-                echo "<div class='space {$class}' data-id='{$espazio['idEspazioa']}' value='{$espazio['idEspazioa']}' onclick='erreserbaElemInsert()'>"
-                    . $espazio['idEspazioa']
-                    . "</div>";
+                echo "<div class='space {$class}' data-id='{$espazio['idEspazioa']}' value='{$espazio['idEspazioa']}'>";
+                echo $espazio['idEspazioa'];
+                echo "</div>";
             }
             ?>
         </div>
@@ -150,14 +141,11 @@ function actualizarColoresEspacios() {
     }
     function erreserbaElemInsert() {
         const selectedSpace = event.target;
-        // Solo permitir selección si el espacio no está en mantenimiento ni reservado por otro usuario
         if (!selectedSpace.classList.contains('negro') && !selectedSpace.classList.contains('rojo')) {
-            // Remover selección previa de todos los espacios
             document.querySelectorAll('.space').forEach(s => {
                 s.classList.remove('selected');
                 s.classList.remove('azul');
             });
-            // Marcar el espacio actual como seleccionado
             selectedSpace.classList.add('selected');
             selectedSpace.classList.add('azul');
         } else if (selectedSpace.classList.contains('negro')) {
@@ -199,16 +187,11 @@ function actualizarColoresEspacios() {
                 const spaceData = data.spaces.find(s => s.idEspazioa === spaceId);
                 
                 if (spaceData) {
-                    if (spaceData.egoera === 2) { // Mantentze-lanetan
-                        space.className = 'space negro';
-                    } else if (spaceData.reserved) {
-                        if (spaceData.idBazkidea === '<?php echo $idBazkidea; ?>') {
-                            space.className = 'space azul'; // Reservado por el usuario actual
-                        } else {
-                            space.className = 'space rojo'; // Reservado por otro usuario
-                        }
-                    } else {
-                        space.className = 'space gris'; // Disponible
+                    // Usar el color proporcionado por el servidor
+                    space.className = `space ${spaceData.color}`;
+                    // Mantener la clase 'selected' si el espacio está seleccionado
+                    if (space.classList.contains('selected')) {
+                        space.classList.add('selected');
                     }
                 }
             });
@@ -263,7 +246,7 @@ function actualizarColoresEspacios() {
 
             tableBody.innerHTML = reservationsHtml;
         });
-        });
+        };
     }
 
     function confirmReservation() {
@@ -389,9 +372,9 @@ function actualizarColoresEspacios() {
                 this.classList.add('selected');
                 this.classList.add('azul');
             } else if (this.classList.contains('negro')) {
-                alert('Espazio hau mantentze-lanetan dago eta ezin da aukeratu.');
+                alert('Espazio hau aukeraezina dago mantentze lanak direla eta.');
             } else if (this.classList.contains('rojo')) {
-                alert('Espazio hau beste erabiltzaile batek erreserbatuta dago.');
+                alert('Espazio hau beste erabiltzaile batengatik erreserbatuta dago.');
             }
         });
     });
@@ -401,3 +384,4 @@ function actualizarColoresEspacios() {
     </script>
 </body>
 </html>
+
