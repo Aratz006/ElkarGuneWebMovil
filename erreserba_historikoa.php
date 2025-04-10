@@ -2,12 +2,12 @@
 session_start();
 require_once 'config.php';
 
-if (!isset($_SESSION['erabiltzailea'])) {
+if (!isset($_SESSION['erab'])) {
     header('Location: index.html');
     exit();
 }
 
-$erabiltzailea = $_SESSION['erabiltzailea'];
+$erabiltzailea = $_SESSION['erab'];
 $currentDate = date('Y-m-d');
 
 try {
@@ -30,7 +30,7 @@ try {
 
     $sql = "SELECT CONCAT(b.izena, ' ', b.abizenak) AS 'Bazkidea', 
                    e.idErreserba AS 'Erreserba zenbakia', 
-                   DATE_FORMAT(e.data, '%Y-%m-%d %H:%i') AS 'Data', 
+                   DATE_FORMAT(e.data, '%Y-%m-%d') AS 'Data', 
                    CASE e.mota 
                        WHEN 0 THEN 'Bazkaria' 
                        WHEN 1 THEN 'Afaria' 

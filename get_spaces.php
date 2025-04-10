@@ -20,36 +20,13 @@ if (empty($date)) {
 try {
     $idBazkidea = $_SESSION['erabiltzailea'];
     
-    $sql = "SELECT 
-            e.idEspazioa, 
-            e.egoera, 
-            e.izena, 
-            e.gaitasuna,
-            CASE 
-                WHEN r.idBazkidea = :idBazkidea THEN 'MiReserva'
-                WHEN e.egoera = 2 THEN 'Mantentze-lanetan'
-                WHEN e.egoera = 1 THEN 'Okupatuta'
-                WHEN ee.idErreserba IS NOT NULL THEN 'Reservado'
-                ELSE 'Libre'
-            END as egoera_testua,
-            CASE 
-                WHEN r.idBazkidea = :idBazkidea THEN 'azul'
-                WHEN e.egoera = 2 THEN 'negro'
-                WHEN ee.idErreserba IS NOT NULL THEN 'rojo'
-                ELSE 'gris'
-            END as color,
-            CASE WHEN ee.idErreserba IS NOT NULL OR e.egoera IN (1, 2) THEN 1 ELSE 0 END as reserved,
-            r.idBazkidea
-            FROM espazioa e
-            LEFT JOIN erreserbaelementua ee ON e.idEspazioa = ee.idEspazioa 
-                AND ee.idErreserba IN (SELECT idErreserba FROM erreserba WHERE data = :date AND mota = :type)
-            LEFT JOIN erreserba r ON ee.idErreserba = r.idErreserba";
+    $sql = "SELECT e.izena FROM espazioa e JOIN erreserbaelementua ee ON e.idEspazioa = ee.idEspazioa JOIN erreserba er ON ee.idErreserba = er.idErreserba WHERE er.mota = :type AND er.data = :date";
 
     $stmt = $pdo->prepare($sql);
     $stmt->execute([
         ':date' => $date,
         ':type' => $type,
-        ':idBazkidea' => $idBazkidea
+        // ':idBazkidea' => $idBazkidea
     ]);
     
     $spaces = $stmt->fetchAll(PDO::FETCH_ASSOC);

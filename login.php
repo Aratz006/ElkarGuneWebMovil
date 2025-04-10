@@ -15,12 +15,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     try {
-        $stmt = $pdo->prepare("SELECT * FROM bazkidea WHERE erabiltzailea = ? AND pasahitza = ?");
+        $stmt = $pdo->prepare("SELECT idBazkidea FROM bazkidea WHERE erabiltzailea = ? AND pasahitza = ?");
         $stmt->execute([$username, $password]);
         $user = $stmt->fetch();
 
         if ($user) {
-            $_SESSION['erabiltzailea'] = $user['erabiltzailea'];
+            $_SESSION['erab'] = $username;
+            $_SESSION['erabiltzailea'] = $user['idBazkidea'];
             header('Location: menu.php');
             exit();
         } else {

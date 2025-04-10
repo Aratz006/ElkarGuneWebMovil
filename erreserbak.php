@@ -7,7 +7,7 @@ if (!isset($_SESSION['erabiltzailea'])) {
 }
 
 $idBazkidea = $_SESSION['erabiltzailea'];
-$mota = isset($_POST['mota']) ? $_POST['mota'] : 2; // Por defecto Bazkaria (0)
+$mota = isset($_POST['mota']) ? $_POST['mota'] : 0; // Por defecto Bazkaria (0)
 $erreserbaData = isset($_POST['data']) ? $_POST['data'] : date('Y-m-d'); // Fecha actual por defecto
 $gaur = date('Y-m-d');
 $fechaLimite = date('Y-m-d', strtotime('+2 months'));
@@ -19,6 +19,49 @@ function getEspazioakEgoera() {
     $stmt->execute();
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
+function getErreEle($data, $mota, $idBazkidea) {
+    global $pdo;
+
+    // First query
+    $sql = "SELECT e.izena 
+            FROM espazioa e 
+            JOIN erreserbaelementua ee ON e.idEspazioa = ee.idEspazioa 
+            JOIN erreserba er ON ee.idErreserba = er.idErreserba 
+            WHERE er.idBazkidea = :idBazkidea 
+            AND er.mota = :mota 
+            AND er.data = :data";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute([
+        ':idBazkidea' => $idBazkidea,
+        ':mota' => $mota,
+        ':data' => $data
+    ]);
+
+    if ($stmt->rowCount() > 0) {
+        return 'azul';
+    } else {
+        // Second query
+        $sql1 = "SELECT e.izena 
+                 FROM espazioa e 
+                 JOIN erreserbaelementua ee ON e.idEspazioa = ee.idEspazioa 
+                 JOIN erreserba er ON ee.idErreserba = er.idErreserba 
+                 WHERE er.mota = :mota 
+                 AND er.data = :data";
+        $stmt1 = $pdo->prepare($sql1);
+        $stmt1->execute([
+            ':mota' => $mota,
+            ':data' => $data
+        ]);
+
+        if ($stmt1->rowCount() > 0) {
+            return 'rojo';
+        } else {
+            return 'available';
+        }
+    }
+}
+
+
 
 function getErreserbak($data, $mota) {
     global $pdo;
@@ -88,8 +131,8 @@ function actualizarColoresEspacios() {
 
         <div class="reservation-type">
             <input type="hidden" id="reservationType" value="<?php echo $mota; ?>">
-            <div class="type-button <?php echo $mota == 0 ? 'active' : ''; ?>" onclick="setType(0)" data-type="0"></div>
             <div class="type-button <?php echo $mota == 1 ? 'active' : ''; ?>" onclick="setType(1)" data-type="1"></div>
+            <div class="type-button <?php echo $mota == 0 ? 'active' : ''; ?>" onclick="setType(0)" data-type="0"></div>
         </div>
 
         <div class="date-selector">
@@ -117,10 +160,16 @@ function actualizarColoresEspacios() {
 
         <div class="spaces-grid">
             <?php
+            
             $espazioak = getEspazioakEgoera();
             foreach ($espazioak as $espazio) {
-                $class = $espazio['egoera'] == 0 ? 'unavailable' : 'available';
-                //echo "class= {$class}";
+                $class1 = $espazio['egoera'] == 0 ? 'unavailable' : 'available';
+                if($class1 == 'available'){
+                    $class1 = getErreEle($erreserbaData, $mota, $idBazkidea);
+                }else if($class1 == 'unavailable'){
+                    $class1 = 'unavailable';
+                }
+                $class = $class1;
                 echo "<div class='space {$class}' data-id='{$espazio['idEspazioa']}' value='{$espazio['idEspazioa']}'>";
                 echo $espazio['idEspazioa'];
                 echo "</div>";
@@ -310,55 +359,9 @@ function actualizarColoresEspacios() {
                 }
             });
     }
+}
 
-    function updateReservationsTable(date, type) {
-        fetch('get_spaces.php', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            body: `date=${date}&type=${type}`
-        })
-        .then(response => response.json())
-        .then(data => {
-            const tableBody = document.getElementById('reservationsTableBody');
-            if (!data.spaces || data.spaces.length === 0) {
-                tableBody.innerHTML = '<tr><td colspan="2" class="no-reservations">Ez dago erreserbarik</td></tr>';
-                return;
-            }
-
-            let reservationsHtml = '';
-            data.spaces.forEach(space => {
-                let estado = '';
-                let clase = '';
-                
-                if (space.egoera === 2) {
-                    estado = 'Mantentze-lanetan';
-                    clase = 'negro';
-                } else if (space.reserved) {
-                    if (space.idBazkidea === '<?php echo $idBazkidea; ?>') {
-                        estado = 'Zure erreserba';
-                        clase = 'azul';
-                    } else {
-                        estado = 'Erreserbatuta';
-                        clase = 'rojo';
-                    }
-                } else {
-                    estado = 'Libre';
-                    clase = 'gris';
-                }
-
-                reservationsHtml += `
-                    <tr>
-                        <td>${space.idEspazioa}</td>
-                        <td class="${clase}">${estado}</td>
-                    </tr>`;
-            });
-
-            tableBody.innerHTML = reservationsHtml;
-        });
-        }
-    }
+    
 
     document.getElementById('reservationDate').addEventListener('change', updateSpaces);
 

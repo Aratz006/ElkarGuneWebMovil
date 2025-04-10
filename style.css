@@ -447,29 +447,30 @@ body {
 .space.unavailable {
     background-color: rgb(0, 0, 0, 0.2);
     color: rgb(0, 0, 0);
+    cursor: not-allowed;
     /* border: 2px solid #ffd700; */
 }
 
 .space.available {
     background-color: transparent;
     color: black;
-    cursor: not-allowed;
+    cursor: pointer;
     /* border: 2px solid #ffd700; */
 }
 
 .space.azul {
     background-color: transparent;
     color: rgb(0, 0, 255);
-    cursor: not-allowed;
-    border: 2px solid #ffd700;
+    cursor: pointer;
+    border: 2px solid rgba(0, 21, 255, 0.3);
     background-color: rgba(0, 21, 255, 0.3);
 }
 
 .space.rojo {
     background-color: transparent;
     color: rgb(255, 0, 0);
-    cursor: pointer;
-    border: 2px solid #ffd700;
+    cursor: not-allowed;
+    border: 2px solid rgba(255, 0, 0, 0.3);
     background-color: rgba(255, 0, 0, 0.3);
 }
 
@@ -509,7 +510,7 @@ body {
 
 .reservations-table {
     position: absolute;
-    top: 50vh;
+    top: 40vh;
     left: 73vw;
     transform: translateX(-50%);
     background-color: rgba(255, 255, 255, 0.9);
@@ -520,6 +521,7 @@ body {
     display: flex;
     flex-direction: column;
     overflow: hidden;
+    z-index: 1;
 }
 
 .reservations-table table {
@@ -536,19 +538,7 @@ body {
     background-color: #ffeb3b;
 }
 
-.reservations-table {
-    position: absolute;
-    top: 38.5vh;
-    left: 73vw;
-    transform: translateX(-50%);
-    background-color: rgba(255, 255, 255, 0.9);
-    border-radius: 1vh;
-    padding: 2vh;
-    box-shadow: 0 0.5vh 2vh rgba(0, 0, 0, 0.1);
-    width: 40vw;
-    height: 20vh;
-    overflow: hidden;
-}
+
 
 .reservations-table table {
     width: 100%;

@@ -2,13 +2,13 @@
 session_start();
 require_once 'config.php';
 
-if (!isset($_SESSION['erabiltzailea'])) {
+if (!isset($_SESSION['erab'])) {
     header('Location: index.html');
     exit();
 }
 
 try {
-    $erabiltzailea = $_SESSION['erabiltzailea'];
+    $erabiltzailea = $_SESSION['erab'];
     $sql = "SELECT m.data AS 'Data', m.mezua AS 'Mezua' 
            FROM mezuak m 
            INNER JOIN bazkidea b ON m.idBazkidea = b.idBazkidea 

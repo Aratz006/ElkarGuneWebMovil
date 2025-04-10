@@ -2,13 +2,13 @@
 session_start();
 require_once 'config.php';
 
-if (!isset($_SESSION['erabiltzailea'])) {
+if (!isset($_SESSION['erab'])) {
     header('Location: index.html');
     exit();
 }
 
 try {
-    $erabiltzailea = $_SESSION['erabiltzailea'];
+    $erabiltzailea = $_SESSION['erab'];
     echo "<!-- Debug: Erabiltzailea = " . htmlspecialchars($erabiltzailea) . " -->";
 
     // Obtener el idBazkidea usando el erabiltzailea
